@@ -1,4 +1,18 @@
-meshes = []
+import os
+import json
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+json_path = os.path.join(script_dir, "data.json")
+
+with open(json_path, "r") as f:
+    data = json.load(f)
+
+meshes = data.get("mesh_names")
+material_type = data.get("material_type")
+glossSurfaceType = data.get("materials").get(material_type).get("gloss_range")
+surfaceType = data.get("materials").get(material_type).get("material_type")
+print(glossSurfaceType)
+print(surfaceType)
 
 
 def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
@@ -42,7 +56,7 @@ def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
 \t\t"BulletCollisionFile" ""
 \t\t"BulletCollisionLOD" "None"
 \t\t"BulletCollisionRigid" "0"
-\t\t"CollisionMap" ""
+\t\t"CollisionMap" "{name}.map"
 \t\t"cullOutDiameter" "0"
 \t\t"cullOutOffsetCP" "1"
 \t\t"cullOutOffsetMP" "1"
@@ -50,7 +64,7 @@ def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
 \t\t"DetailShadows" "0"
 \t\t"doNotUse" "0"
 \t\t"dropLOD" "Auto"
-\t\t"filename" "custom\\jungle\\{name}.xmodel_bin"
+\t\t"filename" "custom\\\\jungle\\\\{name}.xmodel_bin"
 \t\t"forceLod4Rigid" "0"
 \t\t"forceLod5Rigid" "0"
 \t\t"forceLod6Rigid" "0"
@@ -645,7 +659,7 @@ def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
 		"glossRangeMin1" "0"
 		"glossRangeMin2" "0"
 		"glossRangeMin3" "0"
-		"glossSurfaceType" "dirt"
+		"glossSurfaceType" "{glossSurfaceType}"
 		"gNormalScale00" "1"
 		"gNormalScale01" "1"
 		"gNormalScale02" "1"
@@ -864,7 +878,7 @@ def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
 		"stencilOpZFail2" "Keep"
 		"structural" "0"
 		"surfaceClimbType" "<none>"
-		"surfaceType" "dirt"
+		"surfaceType" "{surfaceType}"
 		"sw_codetexture_00" ""
 		"sw_codetexture_01" ""
 		"sw_codetexture_02" ""
@@ -1149,7 +1163,7 @@ def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
 
     texture_body = '''\
 		"arabicUnsafe" "0"
-		"baseImage" "texture_assets\\custom_tex\\jungle\\{name}.tif"
+		"baseImage" "texture_assets\\\\custom_tex\\\\jungle\\\\{name}.tif"
 		"clampU" "0"
 		"clampV" "0"
 		"colorSRGB" "0"
@@ -1202,7 +1216,7 @@ def write_gdt_entries(mesh_names, output_path="gdt_output.txt"):
             f.write(
                 material_template.format(
                     name=mesh,
-                    body=material_body.format(name=mesh)
+                    body=material_body.format(name=mesh, glossSurfaceType=glossSurfaceType, surfaceType=surfaceType),                    
                 )
             )
             f.write(
