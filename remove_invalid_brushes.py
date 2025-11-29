@@ -16,23 +16,35 @@ def remove_brushes(text, brushes_to_remove):
     lines = text.splitlines(keepends=True)
     result = []
     skip = False
+    brush_counter = 0  # Counter for relabeling brushes
 
     for line in lines:
+        stripped = line.strip()
+
         if not skip:
             # Check if this line is the start of a brush we want to remove
+            remove_this_brush = False
             for brush in brushes_to_remove:
-                if line.strip() == f"// brush {brush}":
+                if stripped == f"// brush {brush}":
                     skip = True
+                    remove_this_brush = True
                     print(f"Removing brush {brush}")
                     break
-            else:
+
+            if not remove_this_brush:
+                # Relabel brush lines
+                if stripped.startswith("// brush "):
+                    line = line.replace(stripped, f"// brush {brush_counter}")
+                    brush_counter += 1
                 result.append(line)
         else:
-            if line.strip() == "}":
-                skip = False 
+            # Skip lines until we hit the closing "}"
+            if stripped == "}":
+                skip = False
                 continue
 
     return "".join(result)
+
 
     
 
