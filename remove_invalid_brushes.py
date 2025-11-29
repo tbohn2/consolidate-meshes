@@ -14,52 +14,27 @@ invalid_brushes = data.get("invalid_brushes", [])
 
 def remove_brushes(text, brushes_to_remove):
     lines = text.splitlines(keepends=True)
-    brushes_to_remove = set(str(b) for b in brushes_to_remove)
+    result = []
+    skip = False
 
-    out = []
-    skipping = False
-    brace_depth = 0
-    current_target = None
-
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-
-        if not skipping:
-            # Detect "// brush N"
-            stripped = line.strip()
-            if stripped.startswith("// brush"):
-                parts = stripped.split()
-                if len(parts) >= 3:
-                    bn = parts[2]
-                    if bn in brushes_to_remove:
-                        print(f"Removing brush {bn}")
-                        skipping = True
-                        current_target = bn
-                        brace_depth = 0
-                        i += 1
-                        continue  # do not copy this line
+    for line in lines:
+        if not skip:
+            # Check if this line is the start of a brush we want to remove
+            for brush in brushes_to_remove:
+                if line.strip() == f"// brush {brush}":
+                    skip = True
+                    print(f"Removing brush {brush}")
+                    break
+            else:
+                result.append(line)
         else:
-            # While skipping, track braces to know when the block ends
-            brace_depth += line.count("{")
-            brace_depth -= line.count("}")
+            if line.strip() == "}":
+                skip = False 
+                continue
 
-            # Did the brush block end?
-            if brace_depth <= 0 and "}" in line:
-                skipping = False
-                current_target = None
-                i += 1
-                continue  # skip the closing line as well
+    return "".join(result)
 
-            # Still inside the block → skip the line
-            i += 1
-            continue
-
-        # Not skipping → keep line
-        out.append(line)
-        i += 1
-
-    return "".join(out)
+    
 
 
 for entry in invalid_brushes:
