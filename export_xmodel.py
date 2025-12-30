@@ -18,6 +18,7 @@ bake_res = data.get("bake_res")
 island_margin = data.get("island_margin")
 bake_margin = data.get("bake_margin")
 samples = data.get("samples")
+single_material = data.get("single_material")
 
 def get_materials():
     # Bake textures to one texture
@@ -119,7 +120,8 @@ def get_materials():
 
         print(f"Replaced materials with baked texture: {mesh_name}.tif")       
 
-get_materials()
+if single_material:
+    get_materials()
 
 print("\nFlipping Normals")
 for mesh_name in mesh_names:
